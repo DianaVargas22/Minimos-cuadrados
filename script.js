@@ -1,19 +1,29 @@
 var a;
 var b; 
-var a2=0;
-var discrepancia = 0;
-var errora=0;
-var errorb=0;
-var aux;
+var a2;
+var discrepancia;
+var errora;
+var errorb;
 var lista = []
 var cuerpo=document.getElementById("tBody");
 var cuerpo2=document.getElementById("tBody2");
-var radioButTrat;
-
+var formulaa = document.getElementById("formula"); 
+function verificar()
+{	
+	let radioButTrat;
+	radioButTrat = document.getElementById("nolineal");
+		if (radioButTrat.checked == true)
+		{ 
+			return true;
+		}
+		else
+		{
+			return false;	
+		}
+}
 function registrarDatos(){
 
-   
-	var x = document.getElementById("numero1").value;
+   	var x = document.getElementById("numero1").value;
 	var y = document.getElementById("numero2").value;
 		if(x==='' || y==='')
 		{
@@ -23,24 +33,50 @@ function registrarDatos(){
 		{	
 			document.getElementById("numero1").value = ""; 
 			document.getElementById("numero2").value = "";
-			
-			 radioButTrat = document.getElementById("nolineal");
- 				if (radioButTrat.checked == true) 
+ 	
+ 				if (verificar() == true) 
 				{  
-					
-					var oper = {x: Math.log(x), y: Math.log(y), xy: Math.log(x)*Math.log(y),
-					 x2: Math.pow(Math.log(x),2),y2: Math.pow(Math.log(y),2)};
+					if(x>0 && y>0)
+						{	
+							var oper = {x: Math.log(x), y: Math.log(y), xy: Math.log(x)*Math.log(y),
+							x2: Math.pow(Math.log(x),2),y2: Math.pow(Math.log(y),2)};
+						}
+					else
+					{
+						if(x<=0 && y<=0)
+						{
+							var oper = {x: Math.log(Math.abs(x))*-1, y:Math.log(Math.abs(y))*-1, 
+							xy: Math.log(Math.abs(x))*-1*Math.log(Math.abs(y))*-1, 
+							x2: Math.pow(Math.log(Math.abs(x))*-1,2),y2: Math.pow(Math.log(Math.abs(y))*-1,2)};		
+						}
+						else
+						{
+							if(x<1)
+							{
+								var oper = {x: Math.log(Math.abs(x))*-1, y: Math.log(y), 
+								xy: Math.log(Math.abs(x))*-1*Math.log(y),
+								 x2: Math.pow(Math.log(Math.abs(x))*-1,2),y2: Math.pow(Math.log(y),2)};	
+					 
+							}
+							else
+							{
+								var oper = {x: Math.log(x), y: Math.log(Math.abs(y))*-1, 
+								xy: Math.log(x)*Math.log(Math.abs(y))*-1,
+					 			x2: Math.pow(Math.log(x),2),y2: Math.pow(Math.log(Math.abs(y))*-1,2)};
+							}
+						}
+					}		
 				}
-			else{
+				else{
 			
 					var oper = {x: x, y: y, xy: x*y, x2: Math.pow(x,2),y2: Math.pow(y,2)};
 				}
-		lista.push(oper);
-		escribirTabla(oper);
+			lista.push(oper);
+			escribirTabla(oper);
 		}
 
 }
-
+		
 function escribirTabla(oper){
 	let fila= `<tr>
 		<td class='numero'>${lista.length}</td>
@@ -59,7 +95,7 @@ function sumatorias(oper) {
 	var sumaxy=0;
 	var sumax2=0;
 	var sumay2=0;	
-	for (var aux of lista)
+	for (let aux of lista)
 	{
 		sumax+= parseFloat(aux.x);
 		sumay+= parseFloat(aux.y);
@@ -70,8 +106,8 @@ function sumatorias(oper) {
 		
 	if (lista.length>2) {	
 		let n = lista.length;
-		aux = (n*sumax2) - Math.pow(sumax,2);
-		if (radioButTrat.checked == true) 
+		 let aux = (n*sumax2) - Math.pow(sumax,2);
+		if (verificar() == true ) 
 		{
 			a = ((sumay*sumax2)-(sumaxy*sumax))/(aux);
 			a2 = Math.pow(Math.E,a);
@@ -100,35 +136,18 @@ function sumatorias(oper) {
 		<td class='numero'>${sumay2} </td>
 		<td class='numero'>${sumaxy} </td>
 		</tr>`
-	cuerpo.innerHTML+=fila;
-	} else {
+		cuerpo.innerHTML+=fila;
+		formula();
+	}
+	 else {
 		alert("Faltan datos");
-	}	
-	
-	
-}
+	}
 
-function borrarFila(oper) {
-	lista.pop();
-	let tabla = document.getElementById('tbody');
-	let aux = lista.length;	
-	let hijo =  tabla.children[aux];
-	hijo.outerHTML='';
-}
+}	
 
-function borrarTabla(fila) {
-	lista = [];
-	cuerpo.innerHTML=''; 
-	cuerpo2.innerHTML='';
-	a=0;
-	b=0;
-	discrepancia=0;
-	errora=0;
-	errorb=0;
-}
 
 function lleanarA_b(){
-	if (radioButTrat.checked == true) 
+	if (verificar() == true ) 
 		{
 		let fila = `<tr> 
 		<td class='numero'> ${a} </td>  
@@ -138,7 +157,8 @@ function lleanarA_b(){
 		<td class='numero'> ${errorb} </td>
 		</tr>
 		<tr>
-		<td class='numero'> ${a2} </td> 
+
+		<td class='numero' colspan='2'> ${"a: "+a2} </td> 
 		</tr>`
 		cuerpo2.innerHTML+=fila;
 		}
@@ -155,6 +175,29 @@ function lleanarA_b(){
 	
 	
 }
+function formula(){
+	
+	let fila;
+	if (verificar() == true) 
+	{
+	 
+	 fila = `<p class='formula'>
+	${"Formula: "+"y= "+ a2+"*X^("+b+")"} </p>`
+	
+	}
+	else
+	{
+	
+	fila = `<p class='formula'>
+	${"Formula: "+"y= "+ a+"+"+b+"*X" } </p>`
+	
+	}	
+	formulaa.innerHTML+=fila;
+	
+}
+
+
+	
 
 
 function getX(lista){
@@ -168,10 +211,43 @@ function getX(lista){
 
 function getY(lista){
 	let listaY = []
+	if (verificar() == true ) 
+	{
+	
 	let guardar = 0;
-	for (let item of lista) {
+		for (let item of lista) {
+		guardar = a *(Math.pow(item.x,b));
+		listaY.push(guardar);
+		}
+	}
+	else
+	{
+	let guardar = 0;
+		for (let item of lista) {
 		guardar = a + (b*item.x);
 		listaY.push(guardar);
+		}
 	}	
 	return listaY
+}
+function getY1(lista){
+	let listaY1 = []
+	for(let item of lista)
+	{
+		listaY1.push(item.y);
+	}
+		
+	return listaY1
+}
+function borrarFila(oper) {
+	lista.pop();
+	let tabla = document.getElementById('tBody');
+	let aux = lista.length;	
+	let hijo =  tabla.children[aux];
+	hijo.outerHTML='';
+}
+
+function borrarTabla(fila) {
+
+	location.reload();
 }
